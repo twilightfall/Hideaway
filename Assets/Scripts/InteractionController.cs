@@ -63,4 +63,12 @@ public class InteractionController : MonoBehaviour
             }
         }
     }
+
+    public void OnOpenMenu(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            GameManager.Instance.OpenMenu();
+        }
+    }
 }

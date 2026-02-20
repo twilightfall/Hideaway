@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7771561635220822899}
   m_Layer: 0
   m_Name: Terminal
-  m_TagString: Untagged
+  m_TagString: Terminal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -129,6 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TerminalDisplay
   canvas: {fileID: 6112777320945525457}
   displayText: {fileID: 5121783101799082317}
+  displayImage: {fileID: 0}
 --- !u!1 &4793557385755937204
 GameObject:
   m_ObjectHideFlags: 0

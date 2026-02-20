@@ -5,7 +5,10 @@ using System.Net.Cache;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using UnityEngine.UI;
+using TMPro;
 
+[Serializable]
 public class GameData
 {
     public string Name { get; set; }
@@ -14,10 +17,26 @@ public class GameData
     public string Country { get; set; }
     [JsonProperty("work_experience")]
     public List<WorkExperience> WorkExperience { get; set; }
+    [JsonProperty("education")]
+    List<Education> Education { get; set; }
     [JsonProperty("terminal_entries")]
-    public object TerminalEntries { get; set; }
+    public List<TerminalEntry> TerminalEntries { get; set; }
+
+    public void ReplaceNewline()
+    {
+        foreach (var entry in TerminalEntries)
+        {
+            entry.Data = entry.Data.Replace("\\n", "\n");
+        }
+
+        foreach (var experience in WorkExperience)
+        {
+            experience.Description = experience.Description.Replace("\\n", "\n");
+        }
+    }
 }
 
+[Serializable]
 public class WorkExperience
 {
     public string Title { get; set; }
@@ -27,15 +46,39 @@ public class WorkExperience
     public string Description { get; set; }
 }
 
+[Serializable]
+public class Education
+{
+    public string Degree { get; set; }
+    public string Institution { get; set; }
+    public string GraduationDate { get; set; }
+}
+
+[Serializable]
 public class TerminalEntry
 {
+    public int ID { get; set; }
     public string Location { get; set; }
     public string Data { get; set; }
 }
 
+public enum Location
+{
+    entrance, 
+    dev, 
+    teaching
+}
+
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    [SerializeField]
+    GameObject menu;
+
+    [SerializeField]
+    TMP_Text debug;
 
     public GameData gameData;
 
@@ -50,10 +93,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-    }
 
-    private void Start()
-    {
         StartCoroutine(GetData());
     }
 
@@ -65,18 +105,33 @@ public class GameManager : MonoBehaviour
         if(request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogError("Error: " + request.error);
+            debug.text = "Error: " + request.error;
+            yield break;
         }
         else
         {
             string data = request.downloadHandler.text;
             print(data);
+
             GameData x = JsonConvert.DeserializeObject<GameData>(data);
-
-            //var x = JsonUtility.FromJson<GameData>(data);
             gameData = x;
-            print(x.WorkExperience[0].Title);
+            gameData.ReplaceNewline();
+            debug.text = "Data loaded successfully!";
+            yield break;
+        }
+    }
 
-            //Debug.Log("Response: " + request.downloadHandler.text);
+    public void OpenMenu()
+    {
+        if (!menu.activeInHierarchy)
+        {
+            Time.timeScale = 0f;
+            menu.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            menu.SetActive(false);
         }
     }
 }
